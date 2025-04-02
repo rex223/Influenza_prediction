@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Project Title: Generalized Influenza Pandemic Warning System for 2026
 
 1. Project Overview
@@ -56,3 +57,6 @@ We’ll look for rapid increases in cases (e.g., cases doubling in a few weeks),
 We’ll also check weather, hospital data, and travel patterns to see if conditions are right for a big outbreak.
 Example: If ILI cases in Maharashtra jump from 1,000 to 3,000 in three weeks in January 2026, the weather is cold and dry, hospitals are full, and NCDC reports a new influenza strain, our system will warn us of a possible pandemic.
 Plan: We’ll focus on one state (like Maharashtra) to keep it manageable, but we can compare trends across states.
+=======
+# Influenza_prediction
+>>>>>>> origin/main
