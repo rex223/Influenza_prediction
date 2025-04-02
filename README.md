@@ -1,4 +1,6 @@
-# Generalized Influenza Pandemic Warning System for 2026
+# Generalized Influenza Pandemic Warning System
+
+## 🚀 [**Live App Link**](https://influenzapred1model.streamlit.app/) 🚀
 
 ## 1. Project Overview
 
