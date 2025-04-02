@@ -1,62 +1,74 @@
-<<<<<<< HEAD
-Project Title: Generalized Influenza Pandemic Warning System for 2026
+# Generalized Influenza Pandemic Warning System for 2026
 
-1. Project Overview
+## 1. Project Overview
 
-Goal: We’re working as a team to build a warning system that predicts if we will see an influenza pandemic in India, focusing on a state-level analysis. This system will detect most types of influenza.
+### Goal:
+We are building a **Generalized Influenza Pandemic Warning System** that predicts the likelihood of an influenza pandemic in India, with a focus on **state-level analysis**. Our system will track and predict the spread of various influenza strains, including newly emerging ones, to provide early warnings.
 
-2. What We Need to Build a Generalized Influenza Warning System
+## 2. What We Need to Build This System
 
-We need more types of information to track all influenza activity, detect new strains, and understand how influenza spreads and how bad it might get. Here’s what to look for:
-a. Weekly or Monthly Influenza-Like Illness (ILI) Data
+To effectively track and predict influenza activity, we need to gather data from several sources. Here's the essential data we'll use:
 
-Why: ILI includes symptoms like fever and cough, which cover all influenza types (A, B, C) and new strains, not just H1N1. Pandemics grow quickly, so we need data every week or month.
-Where to Get It: India’s Integrated Disease Surveillance Programme (IDSP) or state health departments (e.g., Maharashtra’s health reports).
-What It Helps With: Spotting a sudden rise in influenza cases in 2026, like if cases triple in a few weeks, no matter the strain.
-b. Severe Acute Respiratory Infection (SARI) Data
+### a. **Weekly or Monthly Influenza-Like Illness (ILI) Data**
+- **Why**: ILI includes common symptoms like fever and cough, applicable to all influenza types (A, B, C) and new strains.
+- **Where to Get It**: India's Integrated Disease Surveillance Programme (IDSP) or state health departments (e.g., Maharashtra health reports).
+- **What It Helps With**: Spotting sudden rises in influenza cases, such as a rapid increase in ILI cases.
 
-Why: SARI cases show severe illness requiring hospitalization, which can happen with any influenza type. A spike in SARI cases often means a serious outbreak.
-Where to Get It: IDSP or state health departments for hospital admission data.
-What It Helps With: Seeing if influenza in 2026 is causing more severe illness, which could signal a pandemic.
-c. Weather Information
+### b. **Severe Acute Respiratory Infection (SARI) Data**
+- **Why**: SARI cases represent severe illness requiring hospitalization, often associated with influenza outbreaks.
+- **Where to Get It**: IDSP or state health departments for hospital admission data.
+- **What It Helps With**: Detecting if influenza is causing more severe illness, which could signal a pandemic.
 
-Why: Influenza spreads more in cold, dry weather or during monsoons (like January or August in India). This applies to all influenza types, and unusual weather could increase the risk.
-Where to Get It: India Meteorological Department (IMD) for temperature, humidity, and rainfall data.
-What It Helps With: Understanding if 2026 weather conditions might make influenza spread faster.
-d. Virus Type Information (for New Strains)
+### c. **Weather Information (Average Monthly Temperature)**
+- **Why**: Influenza spreads more in cold, dry weather or during the monsoon season (e.g., January or August in India).
+- **Where to Get It**: India Meteorological Department (IMD) for temperature, humidity, and rainfall data.
+- **What It Helps With**: Understanding if weather conditions in 2026 could increase the spread of influenza.
 
-Why: A new or more dangerous influenza strain (e.g., a mutated H1N1 or a new H5N1) could cause a pandemic. We need to know if a new strain appears.
-Where to Get It: National Centre for Disease Control (NCDC) or global databases like WHO’s FluNet.
-What It Helps With: Checking if a new, fast-spreading influenza strain appears in 2026.
-e. Zoonotic Influenza Data
+### d. **Virus Type Information (for New Strains)**
+- **Why**: New or more dangerous influenza strains (e.g., mutated H1N1 or new strains) could cause a pandemic.
+- **Where to Get It**: National Centre for Disease Control (NCDC) or global databases like WHO’s FluNet.
+- **What It Helps With**: Monitoring the appearance of new, fast-spreading influenza strains.
 
-Why: New pandemics often start from animal-to-human strains (e.g., H5N1, H9N2). India had an H9N2 case in 2024, so we need to watch for these.
-Where to Get It: WHO India reports or IDSP (monitors avian influenza in poultry and humans).
-What It Helps With: Spotting early signs of a new strain that could jump to humans and cause a pandemic.
-f. Hospital and Healthcare Data
+### e. **Hospital and Healthcare Data**
+- **Why**: A surge in influenza cases could overwhelm hospitals, turning an outbreak into a full-scale crisis.
+- **Where to Get It**: State health departments or IDSP for hospital bed and ICU data.
+- **What It Helps With**: Evaluating if hospitals are prepared for a potential surge in cases.
 
-Why: If hospitals are already full, a big influenza outbreak could turn into a crisis, no matter the strain.
-Where to Get It: State health departments or IDSP for hospital bed and ICU data.
-What It Helps With: Seeing if hospitals in 2026 can handle a surge in influenza patients.
-g. Population and Travel Data
+### f. **Population and Travel Data**
+- **Why**: High population density and frequent travel (e.g., during festivals like Diwali) increase the speed at which influenza spreads.
+- **Where to Get It**: Census of India for population data, and Indian Railways for travel trends.
+- **What It Helps With**: Identifying high-risk states, like Maharashtra, with large populations and frequent movement.
 
-Why: Crowded states and travel (e.g., during festivals like Diwali) help influenza spread faster, regardless of the type.
-Where to Get It: Census of India for population data, and Indian Railways or news for travel trends.
-What It Helps With: Identifying high-risk states like Maharashtra, where lots of people live and travel.
-h. Social Media or Search Trends
+### g. **Pigs Vaccination Data**
+- **Why**: Vaccination of pigs can reduce the chances of zoonotic influenza strains affecting humans.
+- **Where to Get It**: Local veterinary health data and government reports.
+- **What It Helps With**: Understanding the level of protection against zoonotic strains.
 
-Why: People often search or post about symptoms (like “fever” or “cough”) before going to a doctor, which can give early warnings of an outbreak.
-Where to Get It: Google Trends or posts on platforms like X.
-What It Helps With: Spotting early signs of an influenza outbreak in 2026, no matter the strain.
-4. How We’ll Use This Information
+## 3. How We’ll Use This Information
 
-We’ll combine all this data to build a warning system that predicts if 2026 will have an influenza pandemic, focusing on all influenza types and new strains.
-How It Works:
-We’ll use weekly ILI data to track overall influenza activity, not just one strain.
-We’ll look for rapid increases in cases (e.g., cases doubling in a few weeks), severe illness (e.g., more SARI cases), and signs of new strains (e.g., from NCDC reports).
-We’ll also check weather, hospital data, and travel patterns to see if conditions are right for a big outbreak.
-Example: If ILI cases in Maharashtra jump from 1,000 to 3,000 in three weeks in January 2026, the weather is cold and dry, hospitals are full, and NCDC reports a new influenza strain, our system will warn us of a possible pandemic.
-Plan: We’ll focus on one state (like Maharashtra) to keep it manageable, but we can compare trends across states.
-=======
-# Influenza_prediction
->>>>>>> origin/main
+We will combine all this data to build a **warning system** capable of predicting if a pandemic is likely in 2026. Here's how it works:
+
+- **Tracking ILI**: Weekly ILI data will be monitored to track overall influenza activity.
+- **Rapid Increases**: We’ll look for rapid increases in ILI cases (e.g., cases doubling in a few weeks).
+- **Severe Illness**: We’ll track SARI data to identify any severe illness spikes.
+- **New Strains**: We will monitor NCDC for reports of new influenza strains.
+- **Weather Impact**: We'll check the weather to see if conditions in 2026 could increase influenza spread.
+- **Healthcare Capacity**: Hospital and ICU data will help us assess the ability of healthcare systems to handle a surge.
+- **State-Level Risk Assessment**: We'll evaluate high-risk states, considering population density and travel patterns.
+
+### Example:
+If we see ILI cases in **Maharashtra** jump from **1,000** to **3,000** in three weeks during **January 2026**, the weather is **cold and dry**, hospitals are **nearly full**, and NCDC reports a **new influenza strain**, our system will issue an early **pandemic warning**.
+
+## 4. Planned Features
+
+- **State Cases to Population Ratio**: We will use this ratio to determine the relative risk of influenza outbreaks across states.
+- **Allocated Influenza Cases**: The system will predict allocated influenza cases across different states to forecast potential outbreaks.
+- **Integrated Data Sources**: The system will automatically integrate data from various sources for a holistic view of the influenza threat.
+
+---
+
+### Let's build a robust system to track and predict **influenza pandemics** with real-time data, keeping India prepared for any unexpected outbreak!
+
+---
+
+**Note**: Many datasets were not available, so we had to make do with whatever we could access, ensuring the system works with the best data at hand.
