@@ -6,3 +6,5 @@ xgboost==2.1.4
 scikit-fuzzy==0.5.0
 networkx==3.3
 plotly==6.0.1
+matplotlib==3.10.1
+streamlit==1.44.1
