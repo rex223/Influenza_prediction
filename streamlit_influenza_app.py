@@ -53,13 +53,31 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    /* Risk cards */
-    .risk-card {
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-top: 1rem;
-        text-align: center;
+    /* Risk cards with better dark mode support */
+.risk-card {
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* Dark mode styles using CSS media query */
+@media (prefers-color-scheme: dark) {
+    .risk-card.no-risk {
+        background-color: rgba(16, 185, 129, 0.3) !important;
+        color: white !important;
     }
+    
+    .risk-card.low-risk {
+        background-color: rgba(245, 158, 11, 0.3) !important;
+        color: white !important;
+    }
+    
+    .risk-card.high-risk {
+        background-color: rgba(239, 68, 68, 0.3) !important;
+        color: white !important;
+    }
+}
     
     /* Footer - ensure better contrast */
     .footer {
@@ -768,14 +786,13 @@ with col2:
 
         # Display risk assessment with better styling
         st.markdown(f"""
-        <div class="risk-card" style="background-color:{get_risk_bg_color(risk_label)};">
-            <h2 style="color:{risk_color}; margin-bottom:10px;">
+        <div class="risk-card {risk_label.lower().replace(' ', '-')}-risk">
+            <h2 style="margin-bottom:10px;">
                 {get_risk_icon(risk_label)} {risk_label}
             </h2>
             <p style="font-size:1.2em; margin-bottom:20px;">{risk_message}</p>
         </div>
         """, unsafe_allow_html=True)
-        
         # Display gauge chart
         st.markdown('<div class="card">', unsafe_allow_html=True)
         st.subheader("Risk Assessment Score")
