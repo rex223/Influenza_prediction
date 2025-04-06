@@ -183,6 +183,15 @@ st.markdown("""
         visibility: visible;
         opacity: 1;
     }
+    
+    /* Warning box for zero cases */
+    .warning-box {
+        background-color: rgba(255, 193, 7, 0.2);
+        border-left: 5px solid #ffc107;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -246,39 +255,65 @@ state_data = {
     'West Bengal': {'population': 91276115, 'area': 88752},
 }
 
-# Define fuzzy logic system with updated ranges
+# Define better fuzzy logic system with updated ranges
 monthly_temperature = ctrl.Antecedent(np.arange(0, 41, 1), 'monthly_temperature')
 pop_density = ctrl.Antecedent(np.arange(0, 5001, 50), 'pop_density')
-pig_vaccinated = ctrl.Antecedent(np.arange(0, 100001, 1000), 'pig_vaccinated')
+pig_vaccinated = ctrl.Antecedent(np.arange(0, 100001, 1000), 'pig_vaccinated')  # Ensure full range covers up to 100k
 state_total_population = ctrl.Antecedent(np.arange(0, 200000001, 1000000), 'state_total_population')
-monthly_case_to_pop_ratio = ctrl.Antecedent(np.arange(0, 1e-4, 1e-6), 'monthly_case_to_pop_ratio')  # Adjusted range
+monthly_case_to_pop_ratio = ctrl.Antecedent(np.arange(0, 1e-3, 1e-5), 'monthly_case_to_pop_ratio')
 
-# Output variable
+# Output variable - ensure full range is covered
 outbreak_risk = ctrl.Consequent(np.arange(0, 101, 1), 'outbreak_risk')
 
-# Membership functions for inputs
-monthly_temperature.automf(3, names=['poor', 'average', 'good'])
-pop_density.automf(3, names=['poor', 'average', 'good'])
-pig_vaccinated.automf(3, names=['poor', 'average', 'good'])
-state_total_population.automf(3, names=['poor', 'average', 'good'])
-monthly_case_to_pop_ratio.automf(3, names=['poor', 'average', 'good'])
+# Better membership functions for inputs
+pop_density['low'] = fuzz.trimf(pop_density.universe, [0, 0, 500])
+pop_density['medium'] = fuzz.trimf(pop_density.universe, [300, 1000, 2000])
+pop_density['high'] = fuzz.trimf(pop_density.universe, [1500, 3000, 5000])
 
-# Membership functions for output
-outbreak_risk['no_risk'] = fuzz.trimf(outbreak_risk.universe, [0, 0, 20])
-outbreak_risk['low'] = fuzz.trimf(outbreak_risk.universe, [10, 30, 50])
-outbreak_risk['high'] = fuzz.trimf(outbreak_risk.universe, [40, 100, 100])
+state_total_population['small'] = fuzz.trimf(state_total_population.universe, [0, 0, 10000000])
+state_total_population['medium'] = fuzz.trimf(state_total_population.universe, [5000000, 50000000, 100000000])
+state_total_population['large'] = fuzz.trimf(state_total_population.universe, [50000000, 150000000, 200000000])
 
-# Define fuzzy rules
-rule1 = ctrl.Rule(monthly_temperature['poor'] & pop_density['good'] & monthly_case_to_pop_ratio['good'], outbreak_risk['high'])
-rule2 = ctrl.Rule(pig_vaccinated['poor'] & state_total_population['good'], outbreak_risk['high'])
-rule3 = ctrl.Rule(monthly_temperature['good'] & pop_density['poor'] & monthly_case_to_pop_ratio['poor'] & pig_vaccinated['good'], outbreak_risk['no_risk'])
-rule4 = ctrl.Rule(pig_vaccinated['good'], outbreak_risk['low'])
-rule5 = ctrl.Rule(monthly_temperature['average'] & monthly_case_to_pop_ratio['average'], outbreak_risk['low'])
-rule6 = ctrl.Rule(pop_density['average'] & pig_vaccinated['average'], outbreak_risk['low'])
-rule7 = ctrl.Rule(monthly_case_to_pop_ratio['good'], outbreak_risk['high'])  # New rule
+# Improved case-to-pop ratio with wider range
+monthly_case_to_pop_ratio['low'] = fuzz.trimf(monthly_case_to_pop_ratio.universe, [0, 0, 2e-4])
+monthly_case_to_pop_ratio['medium'] = fuzz.trimf(monthly_case_to_pop_ratio.universe, [1e-4, 3e-4, 5e-4])
+monthly_case_to_pop_ratio['high'] = fuzz.trimf(monthly_case_to_pop_ratio.universe, [4e-4, 7e-4, 1e-3])
 
-# Create control system
-outbreak_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7])
+# Fix for Issue 2: Define better membership functions for pig_vaccinated with improved ranges
+pig_vaccinated['low'] = fuzz.trimf(pig_vaccinated.universe, [0, 5000, 20000])
+pig_vaccinated['medium'] = fuzz.trimf(pig_vaccinated.universe, [15000, 40000, 65000])  # Adjust medium range to include 40000
+pig_vaccinated['high'] = fuzz.trimf(pig_vaccinated.universe, [50000, 75000, 100000])
+
+# Improved temperature membership functions that better match the 0-40°C range
+monthly_temperature['cold'] = fuzz.trimf(monthly_temperature.universe, [0, 0, 15])
+monthly_temperature['moderate'] = fuzz.trimf(monthly_temperature.universe, [10, 20, 30])
+monthly_temperature['hot'] = fuzz.trimf(monthly_temperature.universe, [25, 35, 40])
+
+# Membership functions for output - ensure full coverage
+outbreak_risk['no_risk'] = fuzz.trimf(outbreak_risk.universe, [0, 0, 25])
+outbreak_risk['low_risk'] = fuzz.trimf(outbreak_risk.universe, [15, 35, 55])
+outbreak_risk['high_risk'] = fuzz.trimf(outbreak_risk.universe, [45, 75, 100])
+
+# Define improved fuzzy rules with temperature-specific considerations
+rule1 = ctrl.Rule(monthly_temperature['cold'] & monthly_case_to_pop_ratio['high'], outbreak_risk['high_risk'])
+rule2 = ctrl.Rule(pig_vaccinated['low'] & state_total_population['large'], outbreak_risk['high_risk'])
+rule3 = ctrl.Rule(monthly_temperature['hot'] & pop_density['low'] & monthly_case_to_pop_ratio['low'], outbreak_risk['no_risk'])
+rule4 = ctrl.Rule(pig_vaccinated['high'] & state_total_population['medium'], outbreak_risk['low_risk'])
+rule5 = ctrl.Rule(monthly_temperature['moderate'] & monthly_case_to_pop_ratio['medium'], outbreak_risk['low_risk'])
+rule6 = ctrl.Rule(pop_density['high'] & pig_vaccinated['medium'], outbreak_risk['low_risk'])  # Changed from high_risk to low_risk
+rule7 = ctrl.Rule(monthly_case_to_pop_ratio['high'] & pig_vaccinated['low'], outbreak_risk['high_risk'])  
+rule8 = ctrl.Rule(monthly_temperature['moderate'] & pop_density['low'] & monthly_case_to_pop_ratio['low'], outbreak_risk['no_risk'])
+rule9 = ctrl.Rule(state_total_population['small'], outbreak_risk['low_risk'])
+rule10 = ctrl.Rule(pig_vaccinated['low'] & monthly_case_to_pop_ratio['medium'], outbreak_risk['high_risk'])
+rule11 = ctrl.Rule(monthly_temperature['moderate'] & pop_density['high'] & pig_vaccinated['low'], outbreak_risk['high_risk'])
+rule12 = ctrl.Rule(monthly_temperature['hot'] & pop_density['high'] & monthly_case_to_pop_ratio['medium'], outbreak_risk['high_risk'])
+rule13 = ctrl.Rule(monthly_temperature['cold'] & pop_density['high'] & monthly_case_to_pop_ratio['medium'], outbreak_risk['high_risk'])
+rule14 = ctrl.Rule(monthly_temperature['moderate'] & pig_vaccinated['high'] & monthly_case_to_pop_ratio['low'], outbreak_risk['no_risk'])
+# Add a rule for medium vaccinated pigs to ensure 40000 works correctly
+rule15 = ctrl.Rule(pig_vaccinated['medium'], outbreak_risk['low_risk'])
+
+# Create control system with all rules
+outbreak_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12, rule13, rule14, rule15])
 outbreak_sim = ctrl.ControlSystemSimulation(outbreak_ctrl)
 
 # Function to create a gauge chart for risk visualization
@@ -370,24 +405,12 @@ with col1:
             <strong>Area:</strong> {area_val:,} km²<br>
             <strong>Population Density:</strong> {state_total_population_val/area_val:.2f} people/km²
         </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+    """, unsafe_allow_html=True)    
     st.markdown('<div class="card">', unsafe_allow_html=True)
+
+    # Temperature UI with better visual feedback
     st.subheader("🌡️ Environmental Factors")
-    
-    
-    # Temperature with more context
-    temp_col1, temp_col2 = st.columns([3, 1])
-    with temp_col1:
-        monthly_temperature_val = st.slider(
-            "Monthly Average Temperature (°C)", 
-            min_value=0.0, 
-            max_value=40.0, 
-            value=20.0,
-            help="The average temperature for the month in degrees Celsius"
-        )
+
     # Helper functions for UI elements
     def get_temp_color(temp):
         if temp < 10:
@@ -399,6 +422,34 @@ with col1:
         else:
             return "#ef4444"  # Red for hot
 
+    def get_temp_risk_label(temp):
+        if temp < 10:
+            return "Cold - Moderate Indoor Transmission Risk"
+        elif temp < 20:
+            return "Mild - Low Transmission Risk"
+        elif temp >= 20 and temp <= 30:
+            return "Optimal Range - Higher Virus Survival"
+        else:
+            return "Hot - Reduced Outdoor Transmission"
+
+    # Temperature with more context
+    temp_col1, temp_col2 = st.columns([3, 1])
+    with temp_col1:
+        monthly_temperature_val = st.slider(
+            "Monthly Average Temperature (°C)", 
+            min_value=0.0, 
+            max_value=40.0, 
+            value=20.0,
+            help="The average temperature for the month in degrees Celsius. Temperature affects virus survival and transmission patterns."
+        )
+        
+        # Add temperature risk information
+        st.markdown(f"""
+            <div style="background-color:rgba({30}, {30}, {30}, 0.1); padding:10px; border-radius:5px; margin-top:5px;">
+                <strong>{get_temp_risk_label(monthly_temperature_val)}</strong>
+            </div>
+        """, unsafe_allow_html=True)
+    
     def get_risk_bg_color(risk_label):
         if risk_label == "No Risk":
             return "#d1fae5"  # Light green
@@ -413,46 +464,85 @@ with col1:
         elif risk_label == "Low Risk":
             return "⚠️"
         else:
-            return "🚨"    
+            return "🚨" 
+        
     with temp_col2:
         st.markdown(f"""
             <div style="background-color:{get_temp_color(monthly_temperature_val)}; 
-                  height:80px; border-radius:5px; display:flex; 
-                  align-items:center; justify-content:center; color:white; 
-                  font-size:24px; font-weight:bold;">
+                height:80px; border-radius:5px; display:flex; 
+                align-items:center; justify-content:center; color:white; 
+                font-size:24px; font-weight:bold;">
                 {monthly_temperature_val}°C
             </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+            
+    # Improved vaccination section
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.subheader("💉 Vaccination Data")
-    
+
     # Vaccination with percentage context
     pig_vaccinated_val = st.number_input(
         "Number of Pigs Vaccinated", 
-        min_value=0.0, 
-        max_value=100000.0, 
-        value=5000.0,
+        min_value=0, 
+        max_value=100000, 
+        value=5000,
         help="Total number of pigs that have been vaccinated in the region"
     )
-    
+
     # Estimated pig population (this would ideally come from real data)
     estimated_pig_population = 50000
     vaccination_rate = (pig_vaccinated_val / estimated_pig_population) * 100
-    
-    # Vaccination rate progress bar
-    st.markdown(f"<p>Estimated Vaccination Rate: {vaccination_rate:.1f}%</p>", unsafe_allow_html=True)
-    st.progress(min(vaccination_rate/100, 1.0))
-    
+
+    # Determine vaccination status and color
+    def get_vacc_status(rate):
+        if rate < 20:
+            return "Critical", "#ef4444"  # Red
+        elif rate < 30:
+            return "Very Low", "#f97316"  # Dark orange
+        elif rate < 50:
+            return "Insufficient", "#f59e0b"  # Orange
+        elif rate < 70:
+            return "Moderate", "#84cc16"  # Light green
+        else:
+            return "Adequate", "#10b981"  # Green
+
+    vacc_status, vacc_color = get_vacc_status(vaccination_rate)
+
+    # Vaccination rate display with colored status
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <span>Estimated Vaccination Rate:</span>
+            <span style="color: {vacc_color}; font-weight: bold;">{vaccination_rate:.1f}% - {vacc_status}</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Improved vaccination progress bar with color
+    st.markdown(f"""
+        <div style="background-color: #e5e7eb; border-radius: 5px; height: 10px; margin-bottom: 15px;">
+            <div style="background-color: {vacc_color}; width: {min(vaccination_rate, 100)}%; height: 100%; border-radius: 5px;"></div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Vaccination guidance
     if vaccination_rate < 30:
-        st.warning("⚠️ Vaccination rate is below recommended levels (30%)")
-    elif vaccination_rate > 70:
-        st.success("✅ Vaccination rate meets recommended levels (>70%)")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+        st.warning("⚠️ Vaccination rate is critically below recommended levels (30%). This significantly increases outbreak risk.")
+    elif vaccination_rate < 50:
+        st.warning("⚠️ Vaccination rate is below optimal levels. Consider increasing vaccination coverage.")
+    elif vaccination_rate < 70:
+        st.info("ℹ️ Vaccination rate is moderate but could be improved to reduce outbreak risk.")
+    else:
+        st.success("✅ Vaccination rate meets recommended levels (>70%), providing good herd immunity.")
+
+    # Add vaccination impact information
+    st.markdown("""
+        <div style="font-size: 0.9em; margin-top: 10px;">
+            <strong>Vaccination Impact:</strong><br>
+            • <70% coverage: Insufficient to prevent outbreaks<br>
+            • 70-90% coverage: Good protection, limited outbreak potential<br>
+            • >90% coverage: Optimal protection, minimal outbreak risk
+        </div>
+    """, unsafe_allow_html=True)
+
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.subheader("🩺 Case Reports")
     
@@ -464,6 +554,15 @@ with col1:
         value=100.0,
         help="Total number of influenza cases reported in the last month"
     )
+    
+    # Fix for Issue 1: Warning for zero cases
+    if cases_reported_val == 0:
+        st.markdown("""
+            <div class="warning-box">
+                <strong>⚠️ No Cases Reported</strong>
+                <p>You have entered zero cases. This will result in a "No Risk" assessment but may not reflect the true situation if cases are unreported or underreported.</p>
+            </div>
+        """, unsafe_allow_html=True)
     
     # Compute case-to-population ratio and display it
     monthly_case_to_pop_ratio_val = cases_reported_val / state_total_population_val if state_total_population_val > 0 else 0.0
@@ -527,104 +626,163 @@ with col2:
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Prediction results section
+    # Prediction button handler
     if predict_button:
-        # Input validation
-        if any(x < 0 for x in [monthly_temperature_val, pig_vaccinated_val, area_val, state_total_population_val, monthly_case_to_pop_ratio_val, cases_reported_val]):
-            st.error("⚠️ Input values cannot be negative.")
-            st.stop()
-
-        # Display a loading message
-        with st.spinner("Analyzing data and generating prediction..."):
-            # Prepare input for XGBoost model
-            input_data = pd.DataFrame({
-                'monthly_temperature': [monthly_temperature_val],
-                'pig_vaccinated': [pig_vaccinated_val],
-                'area': [area_val],
-                'state_total_population': [state_total_population_val],
-                'monthly_case_to_pop_ratio': [monthly_case_to_pop_ratio_val],
-                'pop_density': [pop_density_val],
-                'name': [state]
-            })
-
-            # One-hot encode the 'name' column to match the model's expected features
-            input_data_encoded = pd.get_dummies(input_data, columns=['name'], prefix='name')
-
-            # Ensure all expected one-hot encoded columns are present
-            expected_columns = model.get_booster().feature_names
-            input_data_encoded = input_data_encoded.reindex(columns=expected_columns, fill_value=0)
-
-            # Apply imputer to the input data
-            try:
-                input_data_imputed = pd.DataFrame(imputer.transform(input_data_encoded), columns=input_data_encoded.columns)
-            except Exception as e:
-                st.error(f"⚠️ Error in preprocessing input data: {str(e)}")
-                st.stop()
-
-            # Get XGBoost prediction
-            try:
-                xgb_prob = model.predict_proba(input_data_imputed)[:, 1][0]  # Probability of high risk
-                xgb_risk_score = xgb_prob * 100  # Scale to 0-100
-            except Exception as e:
-                st.error(f"⚠️ Error in XGBoost prediction: {str(e)}")
-                st.stop()
-
-            # Get Fuzzy Logic prediction
-            try:
-                outbreak_sim.input['monthly_temperature'] = monthly_temperature_val
-                outbreak_sim.input['pop_density'] = pop_density_val
-                outbreak_sim.input['pig_vaccinated'] = pig_vaccinated_val
-                outbreak_sim.input['state_total_population'] = state_total_population_val
-                outbreak_sim.input['monthly_case_to_pop_ratio'] = monthly_case_to_pop_ratio_val
-                outbreak_sim.compute()
-                fuzzy_risk_score = outbreak_sim.output['outbreak_risk']
-            except Exception as e:
-                st.error(f"⚠️ Error in Fuzzy Logic computation: {str(e)}")
-                st.stop()
-
-            # Combined score
-            final_risk_score = (xgb_risk_score + fuzzy_risk_score) / 2
-
+        # Fix for Issue 1: Special case for zero or very low cases
+        if cases_reported_val == 0:
+            fuzzy_risk_score = 0
+            xgb_risk_score = 0
+            final_risk_score = 0
+            
             # Store scores in session state
             st.session_state.fuzzy_risk_score = fuzzy_risk_score
             st.session_state.xgb_risk_score = xgb_risk_score
             st.session_state.final_risk_score = final_risk_score
-
-            # Define risk level
-            if final_risk_score < 5:
-                risk_label = "No Risk"
-                risk_color = "green"
-                risk_message = "The risk of an influenza outbreak is very low."
-                recommendations = [
-                    "Continue routine surveillance",
-                    "Maintain current vaccination protocols",
-                    "Standard hygiene practices are sufficient"
-                ]
-            elif final_risk_score < 20:
-                risk_label = "Low Risk"
-                risk_color = "yellow"
-                risk_message = "The risk of an influenza outbreak is low. Monitor conditions."
-                recommendations = [
-                    "Increase sampling frequency in high-density areas",
-                    "Consider supplemental vaccination in unprotected populations",
-                    "Enhance public awareness about hygiene practices",
-                    "Prepare healthcare facilities for potential cases"
-                ]
-            else:
-                risk_label = "High Risk"
-                risk_color = "red"
-                risk_message = "The risk of an influenza outbreak is high. Immediate action is needed."
-                recommendations = [
-                    "Activate emergency response protocols",
-                    "Implement intensive surveillance and testing",
-                    "Deploy vaccination teams to all affected and surrounding areas",
-                    "Consider movement restrictions for livestock",
-                    "Issue public health advisories",
-                    "Prepare isolation facilities and increase hospital capacity"
-                ]
+            st.session_state.risk_label = "No"
             
-            # Store risk label in session state
-            st.session_state.risk_label = risk_label
+            risk_label = "No Risk"
+            risk_color = "green"
+            risk_message = "No population data available for risk assessment."
+            recommendations = [
+                "Update demographic data",
+                "Continue routine surveillance",
+                "Maintain current vaccination protocols"
+            ]
+        else:
+            # Display a loading message
+            with st.spinner("Analyzing data and generating prediction..."):
+                # Prepare input for XGBoost model
+                input_data = pd.DataFrame({
+                    'monthly_temperature': [monthly_temperature_val],
+                    'pig_vaccinated': [pig_vaccinated_val],
+                    'area': [area_val],
+                    'state_total_population': [state_total_population_val],
+                    'monthly_case_to_pop_ratio': [monthly_case_to_pop_ratio_val],
+                    'pop_density': [pop_density_val],
+                    'name': [state]
+                })
+
+                # One-hot encode the 'name' column to match the model's expected features
+                input_data_encoded = pd.get_dummies(input_data, columns=['name'], prefix='name')
+
+                # Ensure all expected one-hot encoded columns are present
+                expected_columns = model.get_booster().feature_names
+                input_data_encoded = input_data_encoded.reindex(columns=expected_columns, fill_value=0)
+
+                # Apply imputer to the input data
+                try:
+                    input_data_imputed = pd.DataFrame(imputer.transform(input_data_encoded), columns=input_data_encoded.columns)
+                except Exception as e:
+                    st.error(f"⚠️ Error in preprocessing input data: {str(e)}")
+                    st.stop()
+
+                # Get XGBoost prediction
+                try:
+                    xgb_prob = model.predict_proba(input_data_imputed)[:, 1][0]  # Probability of high risk
+                    xgb_risk_score = xgb_prob * 100  # Scale to 0-100
+                except Exception as e:
+                    st.error(f"⚠️ Error in XGBoost prediction: {str(e)}")
+                    st.stop()
+
+                # Get Fuzzy Logic prediction with improved handling
+                try:
+                    outbreak_sim.input['monthly_temperature'] = monthly_temperature_val
+                    outbreak_sim.input['pop_density'] = pop_density_val
+                    outbreak_sim.input['pig_vaccinated'] = pig_vaccinated_val
+                    outbreak_sim.input['state_total_population'] = state_total_population_val
+                    outbreak_sim.input['monthly_case_to_pop_ratio'] = monthly_case_to_pop_ratio_val
+                    outbreak_sim.compute()
+                    fuzzy_risk_score = outbreak_sim.output['outbreak_risk']
+                    
+                except Exception as e:
+                    st.error(f"⚠️ Error in Fuzzy Logic computation: {str(e)}")
+                    st.stop()
+
+
+                if monthly_temperature_val < 10 or monthly_temperature_val > 35:
+                    temp_weight = 0.7  # More weight to fuzzy logic for extreme temperatures
+                else:
+                    temp_weight = 0.5  # Equal weighting for moderate temperatures
+                    
+                final_risk_score = (xgb_risk_score * (1-temp_weight)) + (fuzzy_risk_score * temp_weight)
+
+                # Store scores in session state
+                st.session_state.fuzzy_risk_score = fuzzy_risk_score
+                st.session_state.xgb_risk_score = xgb_risk_score
+                st.session_state.final_risk_score = final_risk_score
+
+                # Adjust risk based on reported cases relative to population size
+                cases_per_million = (cases_reported_val / state_total_population_val) * 1000000 if state_total_population_val > 0 else 0
+                
+                # Case thresholds adjusted for different population sizes
+                LOW_CASE_THRESHOLD = 10  # Cases per million threshold for low risk override
+                HIGH_CASE_THRESHOLD = 100  # Cases per million threshold for high risk consideration
+                
+                # Case-based adjustments
+                if cases_per_million <= LOW_CASE_THRESHOLD:
+                    # If cases are very low, reduce the risk score
+                    final_risk_score = min(final_risk_score, 10 + (cases_per_million / 2))
+                elif cases_per_million >= HIGH_CASE_THRESHOLD:
+                    # If cases are high, increase the risk floor
+                    final_risk_score = max(final_risk_score, 20 + min((cases_per_million - HIGH_CASE_THRESHOLD) / 10, 30))
+                
+                # Temperature-based risk adjustments
+                if monthly_temperature_val < 10:
+                    # Cold conditions can reduce virus survival outdoors but increase indoor transmission
+                    if cases_per_million > 50:  
+                        final_risk_score = max(final_risk_score, 25)  # Maintain elevated risk
+                    else:
+                        final_risk_score = min(final_risk_score, 35)  # Cap risk
+                elif monthly_temperature_val > 35:
+                    # Very hot conditions may reduce virus survival but can impact immunity
+                    final_risk_score = min(final_risk_score * 0.9, 85) 
+                elif 20 <= monthly_temperature_val <= 30:
+                    # Optimal virus survival range
+                    if cases_per_million > 30:
+                        final_risk_score = max(final_risk_score, 30)  # Ensure at least medium risk
+                
+                # Vaccination impact - stronger effect
+                vacc_percentage = (pig_vaccinated_val / 50000) * 100  # Using estimated pig population
+                if vacc_percentage >= 70:
+                    final_risk_score = final_risk_score * 0.7  # Significant reduction for high vaccination
+                elif vacc_percentage <= 20:
+                    final_risk_score = min(final_risk_score * 1.3, 100)  # Increase risk for low vaccination
+                
+                # Define risk level with better thresholds
+                if final_risk_score < 15:
+                    risk_label = "No Risk"
+                    risk_color = "green"
+                    risk_message = "The risk of an influenza outbreak is very low."
+                    recommendations = [
+                        "Continue routine surveillance",
+                        "Maintain current vaccination protocols",
+                        "Standard hygiene practices are sufficient"
+                    ]
+                elif final_risk_score < 40:  # Widened the low risk range
+                    risk_label = "Low Risk"
+                    risk_color = "orange"
+                    risk_message = "The risk of an influenza outbreak is low. Monitor conditions."
+                    recommendations = [
+                        "Increase sampling frequency in high-density areas",
+                        "Consider supplemental vaccination in unprotected populations",
+                        "Enhance public awareness about hygiene practices",
+                        "Prepare healthcare facilities for potential cases"
+                    ]
+                else:
+                    risk_label = "High Risk"
+                    risk_color = "red"
+                    risk_message = "The risk of an influenza outbreak is high. Immediate action is needed."
+                    recommendations = [
+                        "Activate emergency response protocols",
+                        "Implement intensive surveillance and testing",
+                        "Deploy vaccination teams to all affected and surrounding areas",
+                        "Consider movement restrictions for livestock",
+                        "Issue public health advisories",
+                        "Prepare isolation facilities and increase hospital capacity"
+                    ]
+                
+                # Store risk label in session state
+                st.session_state.risk_label = risk_label
 
         # Display risk assessment with better styling
         st.markdown(f"""
