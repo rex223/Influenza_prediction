@@ -18,13 +18,13 @@ st.set_page_config(
 # Custom CSS for medical theme
 st.markdown("""
 <style>
-    .main {
-        background-color: #f8f9fa;
-    }
+    /* Base styles */
     .stApp {
         max-width: 1200px;
         margin: 0 auto;
     }
+    
+    /* Title container - already dark blue so works in both modes */
     .title-container {
         background-color: #0078D7;
         padding: 1.5rem;
@@ -33,40 +33,53 @@ st.markdown("""
         color: white;
         text-align: center;
     }
+    
+    /* Section headers - adjust for dark mode */
     .section-header {
-        background-color: #E6F2FF;
+        background-color: rgba(0, 120, 215, 0.2);
         padding: 0.7rem;
         border-left: 5px solid #0078D7;
         border-radius: 5px;
         margin: 1.5rem 0 1rem 0;
     }
+    
+    /* Cards - adapt to color scheme */
     .card {
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
         padding: 1.5rem;
         margin-bottom: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
+    
+    /* Risk cards */
     .risk-card {
         padding: 1.5rem;
         border-radius: 10px;
         margin-top: 1rem;
         text-align: center;
     }
+    
+    /* Footer - ensure better contrast */
     .footer {
         text-align: center;
         padding: 1rem;
-        color: #6c757d;
+        color: rgba(255, 255, 255, 0.7);
         font-size: 0.8rem;
         margin-top: 2rem;
     }
+    
+    /* Form elements */
     .stNumberInput, .stSelectbox {
         margin-bottom: 1rem;
     }
+    
     /* Custom Slider */
     .stSlider > div > div > div {
-        background-color: #E6F2FF;
+        background-color: rgba(0, 120, 215, 0.3);
     }
+    
     /* Button styling */
     .stButton > button {
         background-color: #0078D7;
@@ -75,19 +88,66 @@ st.markdown("""
         padding: 0.5rem 1rem;
         font-weight: bold;
     }
+    
     .stButton > button:hover {
         background-color: #005bb5;
     }
+    
+    /* Info boxes with better dark mode support */
+    .info-box {
+        background-color: rgba(0, 120, 215, 0.1);
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border-left: 5px solid #0078D7;
+    }
+    
+    /* Debug panel for better visibility */
+    .debug-panel {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-family: monospace;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* State info with better dark mode visibility */
+    .state-info {
+        background-color: rgba(0, 120, 215, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        border: 1px solid rgba(0, 120, 215, 0.3);
+    }
+    
+    /* Case ratio display */
+    .case-info {
+        background-color: rgba(0, 120, 215, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        border: 1px solid rgba(0, 120, 215, 0.3);
+    }
+    
+    /* No prediction placeholder */
+    .placeholder {
+        text-align: center;
+        padding: 40px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
     /* Tooltip */
     .tooltip {
         position: relative;
         display: inline-block;
         margin-left: 5px;
     }
+    
     .tooltip .tooltiptext {
         visibility: hidden;
         width: 200px;
-        background-color: #555;
+        background-color: #333;
         color: #fff;
         text-align: center;
         border-radius: 6px;
@@ -100,6 +160,7 @@ st.markdown("""
         opacity: 0;
         transition: opacity 0.3s;
     }
+    
     .tooltip:hover .tooltiptext {
         visibility: visible;
         opacity: 1;
@@ -285,7 +346,7 @@ with col1:
     
     # Display state information with better formatting
     st.markdown(f"""
-        <div style="background-color:#f1f8ff; padding:10px; border-radius:5px; margin-top:10px;">
+        <div class="state-info">
             <strong>State:</strong> {state}<br>
             <strong>Population:</strong> {state_total_population_val:,}<br>
             <strong>Area:</strong> {area_val:,} km²<br>
@@ -393,7 +454,7 @@ with col1:
     cases_per_100k = monthly_case_to_pop_ratio_val * 100000
     
     st.markdown(f"""
-        <div style="background-color:#f1f8ff; padding:10px; border-radius:5px; margin-top:10px;">
+        <div class="state-info">
             <strong>Case-to-Population Ratio:</strong> {monthly_case_to_pop_ratio_val:.8f}<br>
             <strong>Cases per 100,000 people:</strong> {cases_per_100k:.2f}
         </div>
@@ -422,10 +483,10 @@ with col2:
     
     # Add an info box about the prediction methods
     st.markdown("""
-    <div style="background-color:#e8f4fd; padding:15px; border-radius:5px; margin-bottom:20px; border-left:5px solid #0078D7;">
-        <h4 style="margin-top:0;">🔬 About This Prediction Tool</h4>
-        <p>This system uses a hybrid approach combining XGBoost machine learning with fuzzy logic to predict influenza outbreak risks. It analyzes environmental factors, vaccination rates, population metrics, and historical case data.</p>
-    </div>
+   <div class="info-box">
+    <h4 style="margin-top:0;">🔬 About This Prediction Tool</h4>
+    <p>This system uses a hybrid approach combining XGBoost machine learning with fuzzy logic to predict influenza outbreak risks. It analyzes environmental factors, vaccination rates, population metrics, and historical case data.</p>
+</div>
     """, unsafe_allow_html=True)
     
     predict_col1, predict_col2 = st.columns([3, 1])
@@ -437,8 +498,8 @@ with col2:
     # Show model components if debug is enabled
     if debug and "fuzzy_risk_score" in st.session_state and st.session_state.fuzzy_risk_score is not None:
         st.markdown("""
-        <div style="background-color:#f8f9fa; padding:10px; border-radius:5px; margin-top:10px; font-family:monospace;">
-            <strong>DEBUG DATA:</strong><br>
+        <div class="debug-panel">
+    <strong>DEBUG DATA:</strong><br>
         """, unsafe_allow_html=True)
         st.write(f"Fuzzy Logic Risk Score: {st.session_state.fuzzy_risk_score:.2f}")
         st.write(f"XGBoost Risk Score: {st.session_state.xgb_risk_score:.2f}")
@@ -582,11 +643,11 @@ with col2:
         # Display placeholder when no prediction has been run
         st.markdown('<div class="card" style="text-align:center; padding:40px;">', unsafe_allow_html=True)
         st.markdown("""
-        <div style="color:#6c757d;">
-            <i class="fas fa-chart-line" style="font-size:48px;"></i>
-            <h3>No Prediction Data Available</h3>
-            <p>Adjust the parameters on the left and click "Run Prediction Analysis" to generate an outbreak risk assessment.</p>
-        </div>
+        <div class="placeholder">
+    <i class="fas fa-chart-line" style="font-size:48px;"></i>
+    <h3>No Prediction Data Available</h3>
+    <p>Adjust the parameters on the left and click "Run Prediction Analysis" to generate an outbreak risk assessment.</p>
+</div>
         """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
