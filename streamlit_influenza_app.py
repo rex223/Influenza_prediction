@@ -64,17 +64,17 @@ st.markdown("""
 /* Dark mode styles using CSS media query */
 @media (prefers-color-scheme: dark) {
     .risk-card.no-risk {
-        background-color: rgba(16, 185, 129, 0.1) !important;
+        background-color: rgba(16, 185, 129, 0.3) !important;
         color: white !important;
     }
     
     .risk-card.low-risk {
-        background-color: rgba(245, 158, 11, 0.1) !important;
+        background-color: rgba(245, 158, 11, 0.3) !important;
         color: white !important;
     }
     
     .risk-card.high-risk {
-        background-color: rgba(239, 68, 68, 0.1) !important;
+        background-color: rgba(239, 68, 68, 0.3) !important;
         color: white !important;
     }
 }
