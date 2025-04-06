@@ -584,7 +584,7 @@ with col2:
                 ]
             elif final_risk_score < 20:
                 risk_label = "Low Risk"
-                risk_color = "yellow"
+                risk_color = "orange"
                 risk_message = "The risk of an influenza outbreak is low. Monitor conditions."
                 recommendations = [
                     "Increase sampling frequency in high-density areas",
