@@ -2,6 +2,31 @@
 
 ## 🚀 [**Live App Link**](https://influenzapred1model.streamlit.app/) 🚀
 
+---
+🐼 Project PANDA
+Preventive Analysis for Nationwide Disease Awareness
+🚀 Why PANDA Works
+🛡️ Preventive
+A proactive approach to influenza surveillance — moving beyond reaction, PANDA predicts outbreaks before they escalate.
+
+📊 Analysis
+Built on powerful ML algorithms like XGBoost and enhanced with fuzzy logic, PANDA delivers data-driven insights with accuracy and efficiency.
+
+🌐 Nationwide
+Designed for scalability across India, PANDA supports multi-region deployment to help authorities respond faster, anywhere in the country.
+
+🦠 Disease Focused
+Centering on influenza outbreak detection, PANDA keeps health at the core of its mission.
+
+🔔 Awareness
+Empowering communities, health workers, and officials with timely alerts — PANDA promotes vigilance and “jagrukta” at every level.
+
+🐼 PANDA isn't just a tool. It's a nationwide shield against outbreaks.
+
+---
+
+
+
 ## 1. Project Overview
 
 ### Goal:
