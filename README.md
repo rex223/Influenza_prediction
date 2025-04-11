@@ -24,8 +24,8 @@ Empowering communities, health workers, and officials with timely alerts — PAN
 🐼 PANDA isn't just a tool. It's a nationwide shield against outbreaks.
 
 ---
-
-
+[**Research Paper**](https://docs.google.com/document/d/1BiVhMO7GLBrT7EH2DvbUu3RfRHcD25b2/edit?usp=sharing&ouid=115500748246664750075&rtpof=true&sd=true)
+---
 
 ## 1. Project Overview
 
